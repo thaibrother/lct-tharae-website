@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ไดเรกทอรี่ — คณะภคิณีรักกางเขนแห่งท่าแร่</title>
+  <meta name="description" content="โครงสร้างการปกครองและรายนามสมาชิกคณะภคิณีรักกางเขนแห่งท่าแร่ จังหวัดสกลนคร">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ===== Directory Page ===== */
+
+    /* Org Chart */
+    .org-chart {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin: 40px 0;
+    }
+    .org-level {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    .org-connector {
+      width: 2px;
+      height: 32px;
+      background: var(--gold);
+      margin: 0 auto;
+    }
+    .org-connector-h {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 0;
+      position: relative;
+      padding-top: 0;
+    }
+    .org-connector-h::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: var(--gold);
+    }
+    .org-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      text-align: center;
+      min-width: 200px;
+      max-width: 280px;
+      box-shadow: var(--shadow);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .org-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .org-card.top {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+    }
+    .org-card.top .org-role { color: var(--gold-light); }
+    .org-card.top .org-name { color: #fff; }
+    .org-card.council {
+      background: linear-gradient(135deg, var(--warm-white), #fff);
+      border-color: var(--gold);
+      border-width: 2px;
+    }
+    .org-role {
+      font-size: 0.85rem;
+      color: var(--text-medium);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .org-name {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      color: var(--navy);
+      font-weight: 600;
+    }
+    .org-note {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    /* Member Directory */
+    .dir-section {
+      margin-bottom: 48px;
+    }
+    .dir-section h3 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--gold);
+      margin-bottom: 20px;
+    }
+    .dir-section h3 .dir-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--navy);
+      color: var(--gold-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .dir-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    .dir-table thead th {
+      background: var(--navy);
+      color: #fff;
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+    .dir-table thead th:first-child {
+      border-radius: var(--radius) 0 0 0;
+    }
+    .dir-table thead th:last-child {
+      border-radius: 0 var(--radius) 0 0;
+    }
+    .dir-table tbody td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .dir-table tbody tr:hover {
+      background: var(--warm-gray);
+    }
+    .dir-table .name-cell {
+      font-weight: 600;
+      color: var(--navy);
+      white-space: nowrap;
+    }
+    .dir-table .role-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .role-badge.admin { background: #fef3cd; color: #856404; }
+    .role-badge.director { background: #d4edda; color: #155724; }
+    .role-badge.manager { background: #cce5ff; color: #004085; }
+    .role-badge.teacher { background: #e2e3e5; color: #383d41; }
+    .role-badge.license { background: #f8d7da; color: #721c24; }
+
+    /* Location Cards */
+    .location-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+    .location-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .location-card-header {
+      background: var(--navy);
+      color: #fff;
+      padding: 16px 20px;
+    }
+    .location-card-header h4 {
+      color: #fff;
+      font-size: 1.05rem;
+      margin: 0;
+    }
+    .location-card-header .loc-sub {
+      font-size: 0.85rem;
+      color: var(--gold-light);
+      margin-top: 2px;
+    }
+    .location-card-header.diocese {
+      background: var(--crimson);
+    }
+    .location-card-header.diocese .loc-sub {
+      color: rgba(255,255,255,0.7);
+    }
+    .location-card-body {
+      padding: 16px 20px;
+    }
+    .location-member {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--warm-gray);
+    }
+    .location-member:last-child {
+      border-bottom: none;
+    }
+    .member-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--warm-gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      color: var(--navy);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .member-info .m-name {
+      font-weight: 600;
+      color: var(--navy);
+      font-size: 0.95rem;
+    }
+    .member-info .m-role {
+      font-size: 0.8rem;
+      color: var(--text-medium);
+    }
+
+    /* Stats bar */
+    .dir-stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      padding: 32px 0;
+      margin-bottom: 20px;
+    }
+    .dir-stat {
+      text-align: center;
+    }
+    .dir-stat .num {
+      font-family: var(--font-heading);
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--crimson);
+      line-height: 1;
+    }
+    .dir-stat .label {
+      font-size: 0.9rem;
+      color: var(--text-medium);
+      margin-top: 4px;
+    }
+
+    /* Data note */
+    .data-note {
+      background: var(--warm-gray);
+      border-left: 4px solid var(--gold);
+      padding: 16px 20px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 0.9rem;
+      color: var(--text-medium);
+      margin-bottom: 32px;
+    }
+    .data-note strong { color: var(--navy); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .org-card { min-width: 160px; padding: 14px 16px; }
+      .org-name { font-size: 1rem; }
+      .dir-table { font-size: 0.85rem; }
+      .dir-table thead th,
+      .dir-table tbody td { padding: 8px 10px; }
+      .location-grid { grid-template-columns: 1fr; }
+      .dir-stats { gap: 24px; }
+      .dir-stat .num { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <span class="cross-icon">✝</span>
+        <div>คณะภคิณีรักกางเขนแห่งท่าแร่<span>Lovers of the Cross of Tharae</span></div>
+      </a>
+      <button class="nav-toggle" aria-label="เมนู">☰</button>
+      <ul class="nav-links">
+        <li><a href="index.html">หน้าแรก</a></li>
+        <li><a href="history.html">ประวัติศาสตร์</a></li>
+        <li><a href="schools.html">โรงเรียนในเครือ</a></li>
+        <li><a href="directory.html" class="active">ไดเรกทอรี่</a></li>
+        <li><a href="vocation.html">กระแสเรียก</a></li>
+        <li><a href="about.html">เกี่ยวกับเรา</a></li>
+        <li><a href="contact.html">ติดต่อ</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="history-hero">
+    <div class="container">
+      <p class="hero-motto">DIRECTORY</p>
+      <h1>ไดเรกทอรี่</h1>
+      <p style="opacity:0.85; max-width:650px; margin:16px auto 0; font-size:1.1rem;">
+        โครงสร้างการปกครองและรายนามสมาชิก<br>คณะภคิณีรักกางเขนแห่งท่าแร่
+      </p>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="section" style="padding-bottom:0">
+    <div class="container">
+      <div class="dir-stats fade-in">
+        <div class="dir-stat">
+          <div class="num">4</div>
+          <div class="label">สังฆมณฑล</div>
+        </div>
+        <div class="dir-stat">
+          <div class="num">5</div>
+          <div class="label">โรงเรียนในเครือ</div>
+        </div>
+        <div class="dir-stat">
+          <div class="num">102</div>
+          <div class="label">ปี ก่อตั้ง</div>
+        </div>
+      </div>
+
+      <div class="data-note">
+        <strong>หมายเหตุ:</strong> ข้อมูลในหน้านี้รวบรวมจากเอกสารทางการของคณะฯ
+        รายนามและตำแหน่งอาจมีการเปลี่ยนแปลงตามวาระแต่งตั้ง
+        หากพบข้อมูลที่ต้องแก้ไข กรุณาแจ้ง <a href="contact.html">ฝ่ายประชาสัมพันธ์</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORGANIZATIONAL STRUCTURE -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">โครงสร้างการปกครอง</h2>
+      <div class="section-divider"></div>
+      <p class="section-subtitle">คณะภคิณีรักกางเขนแห่งท่าแร่ ปกครองโดยอธิการิณีเจ้าคณะและสภาที่ปรึกษา ภายใต้สิทธิอำนาจของประมุขอัครสังฆมณฑลท่าแร่-หนองแสง</p>
+
+      <div class="org-chart fade-in">
+        <!-- Level 1: ประมุขอัครสังฆมณฑล -->
+        <div class="org-level">
+          <div class="org-card top">
+            <div class="org-role">ประมุขอัครสังฆมณฑล</div>
+            <div class="org-name">มุขนายก</div>
+            <div class="org-note">อัครสังฆมณฑลท่าแร่-หนองแสง</div>
+          </div>
+        </div>
+
+        <div class="org-connector"></div>
+
+        <!-- Level 2: อธิการิณีเจ้าคณะ -->
+        <div class="org-level">
+          <div class="org-card council">
+            <div class="org-role">อธิการิณีเจ้าคณะ</div>
+            <div class="org-name">Superior General</div>
+            <div class="org-note">ผู้นำสูงสุดของคณะฯ</div>
+          </div>
+        </div>
+
+        <div class="org-connector"></div>
+
+        <!-- Level 3: สภาที่ปรึกษา -->
+        <div class="org-level">
+          <div class="org-card">
+            <div class="org-role">รองอธิการิณี</div>
+            <div class="org-name">Vicar General</div>
+          </div>
+          <div class="org-card">
+            <div class="org-role">ที่ปรึกษา</div>
+            <div class="org-name">Councilor</div>
+          </div>
+          <div class="org-card">
+            <div class="org-role">อธิการิณีนวกสถาน</div>
+            <div class="org-name">Novice Mistress</div>
+          </div>
+          <div class="org-card">
+            <div class="org-role">เหรัญญิก</div>
+            <div class="org-name">Treasurer</div>
+          </div>
+        </div>
+
+        <div class="org-connector"></div>
+
+        <!-- Level 4: อธิการิณีบ้าน -->
+        <div class="org-level">
+          <div class="org-card" style="border-color:var(--crimson); border-width:2px;">
+            <div class="org-role" style="color:var(--crimson)">อธิการิณีบ้าน</div>
+            <div class="org-name">Local Superior</div>
+            <div class="org-note">แต่ละบ้าน / สถานที่ปฏิบัติงาน</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="era-section fade-in" style="margin-top:32px">
+        <h3>หน้าที่ตามโครงสร้าง</h3>
+        <p><strong>อธิการิณีเจ้าคณะ</strong> — ปกครองคณะฯ ทั้งหมด ดูแลชีวิตจิตวิญญาณ พันธกิจ และทรัพย์สินของคณะฯ โดยมีสภาที่ปรึกษาร่วมพิจารณาตัดสินใจ</p>
+        <p><strong>สภาที่ปรึกษา</strong> — ประกอบด้วยรองอธิการิณี ที่ปรึกษา อธิการิณีนวกสถาน และเหรัญญิก ร่วมกันบริหารกิจการของคณะฯ</p>
+        <p><strong>อธิการิณีบ้าน</strong> — รับผิดชอบดูแลภคิณีในแต่ละบ้านหรือสถานที่ปฏิบัติงาน ส่งเสริมชีวิตหมู่คณะและพันธกิจของคณะฯ ในพื้นที่</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHOOL ADMINISTRATORS -->
+  <section class="section section-alt">
+    <div class="container">
+      <h2 class="section-title">ผู้บริหารโรงเรียนในเครือ</h2>
+      <div class="section-divider"></div>
+      <p class="section-subtitle">รายนามผู้บริหารสถานศึกษาในสังกัดคณะภคิณีรักกางเขนแห่งท่าแร่</p>
+
+      <!-- โรงเรียนมารีย์พิทักษ์ อุดรธานี -->
+      <div class="dir-section fade-in">
+        <h3>
+          <span class="dir-icon">🏫</span>
+          โรงเรียนมารีย์พิทักษ์ — อุดรธานี
+        </h3>
+        <table class="dir-table">
+          <thead>
+            <tr>
+              <th>ชื่อ-สกุล</th>
+              <th>ตำแหน่ง</th>
+              <th>หมายเหตุ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="name-cell">นางสาวจิระภรณ์ ทิพย์ทอง</td>
+              <td><span class="role-badge license">ผู้รับใบอนุญาต</span></td>
+              <td>รับโอน พ.ศ. 2550</td>
+            </tr>
+            <tr>
+              <td class="name-cell">นางสาวรัตนา วรรณวิจิตร</td>
+              <td><span class="role-badge manager">ผู้จัดการ</span></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- โรงเรียนมารีย์พิทักษ์สว่างแดนดิน -->
+      <div class="dir-section fade-in">
+        <h3>
+          <span class="dir-icon">🏫</span>
+          โรงเรียนมารีย์พิทักษ์สว่างแดนดิน — สกลนคร
+        </h3>
+        <table class="dir-table">
+          <thead>
+            <tr>
+              <th>ชื่อ-สกุล</th>
+              <th>ตำแหน่ง</th>
+              <th>หมายเหตุ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="name-cell">นางสาวสุนิตย์ ราชจำปี</td>
+              <td><span class="role-badge license">ผู้รับใบอนุญาต</span></td>
+              <td>รับโอน พ.ศ. 2558</td>
+            </tr>
+            <tr>
+              <td class="name-cell">นางสาวนันทิยา เดชาเลิศ</td>
+              <td><span class="role-badge director">ผู้อำนวยการ</span></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- โรงเรียนมารีย์พิทักษ์พังโคน -->
+      <div class="dir-section fade-in">
+        <h3>
+          <span class="dir-icon">🏫</span>
+          โรงเรียนมารีย์พิทักษ์พังโคน — สกลนคร
+        </h3>
+        <table class="dir-table">
+          <thead>
+            <tr>
+              <th>ชื่อ-สกุล</th>
+              <th>ตำแหน่ง</th>
+              <th>หมายเหตุ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="name-cell">นางสาวสุนิตย์ ราชจำปี</td>
+              <td><span class="role-badge license">ผู้รับใบอนุญาต</span></td>
+              <td>รับโอน พ.ศ. 2558</td>
+            </tr>
+            <tr>
+              <td class="name-cell">นางสาวเทียมจันทร์ นิลเขต</td>
+              <td><span class="role-badge director">ผู้อำนวยการ</span></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="name-cell">นางสาวเสงี่ยมศรี คอมแพงจันทร์</td>
+              <td><span class="role-badge manager">ผู้จัดการ</span></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- โรงเรียนมารีย์พิทักษ์เซกา -->
+      <div class="dir-section fade-in">
+        <h3>
+          <span class="dir-icon">🏫</span>
+          โรงเรียนมารีย์พิทักษ์เซกา — บึงกาฬ
+        </h3>
+        <table class="dir-table">
+          <thead>
+            <tr>
+              <th>ชื่อ-สกุล</th>
+              <th>ตำแหน่ง</th>
+              <th>หมายเหตุ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="name-cell">นางสาวจิระภรณ์ ทิพย์ทอง</td>
+              <td><span class="role-badge license">ผู้รับใบอนุญาต</span></td>
+              <td>รับโอน พ.ศ. 2561</td>
+            </tr>
+            <tr>
+              <td class="name-cell">นางสาววัชราภรณ์ งอยหล้า</td>
+              <td><span class="role-badge director">ผู้อำนวยการ</span></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="name-cell">นางสาวกิติยา โพธิสาเกตุ</td>
+              <td><span class="role-badge manager">ผู้จัดการ</span></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- โรงเรียนนิรมลวิทยา -->
+      <div class="dir-section fade-in">
+        <h3>
+          <span class="dir-icon" style="background:var(--crimson)">🏫</span>
+          โรงเรียนนิรมลวิทยา — สกลนคร
+          <span style="font-size:0.75rem; background:var(--crimson); color:#fff; padding:2px 10px; border-radius:12px; font-family:var(--font-thai); font-weight:600;">การกุศล</span>
+        </h3>
+        <table class="dir-table">
+          <thead>
+            <tr>
+              <th>ชื่อ-สกุล</th>
+              <th>ตำแหน่ง</th>
+              <th>หมายเหตุ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="name-cell">มุขนายกจำเนียร สันติสุขนิรันดร์</td>
+              <td><span class="role-badge license">ผู้รับใบอนุญาต</span></td>
+              <td>ประมุขอัครสังฆมณฑลท่าแร่-หนองแสง</td>
+            </tr>
+            <tr>
+              <td class="name-cell">นางสาวสังวาล เด่นไชยรัตน์</td>
+              <td><span class="role-badge manager">ผู้จัดการ</span></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="name-cell">นางสาวเทียมจันทร์ นิลเขต</td>
+              <td><span class="role-badge director">ผู้อำนวยการ</span></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top:12px; font-size:0.88rem; color:var(--text-medium); font-style:italic;">
+          * โรงเรียนของมิสซัง — อัครสังฆมณฑลท่าแร่-หนองแสงเป็นเจ้าของ มอบให้คณะฯ บริหาร
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMBERS BY LOCATION -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">รายนามภคิณีตามสถานที่ปฏิบัติงาน</h2>
+      <div class="section-divider"></div>
+      <p class="section-subtitle">ภคิณีรักกางเขนแห่งท่าแร่ปฏิบัติงานใน 4 สังฆมณฑล</p>
+
+      <div class="location-grid">
+
+        <!-- อาราม ท่าแร่ -->
+        <div class="location-card fade-in">
+          <div class="location-card-header">
+            <h4>✝ อารามคณะฯ ท่าแร่</h4>
+            <div class="loc-sub">ศูนย์กลาง · อ.เมือง จ.สกลนคร</div>
+          </div>
+          <div class="location-card-body">
+            <div class="location-member">
+              <div class="member-avatar">✝</div>
+              <div class="member-info">
+                <div class="m-name">อธิการิณีเจ้าคณะ</div>
+                <div class="m-role">Superior General</div>
+              </div>
+            </div>
+            <div class="location-member">
+              <div class="member-avatar">✝</div>
+              <div class="member-info">
+                <div class="m-name">สภาที่ปรึกษา</div>
+                <div class="m-role">Council Members</div>
+              </div>
+            </div>
+            <div class="location-member">
+              <div class="member-avatar">✝</div>
+              <div class="member-info">
+                <div class="m-name">นวกจารย์ & ภคิณีประจำอาราม</div>
+                <div class="m-role">Novice Mistress & Resident Sisters</div>
+              </div>
+            </div>
+            <p style="color:var(--text-light); font-size:0.82rem; margin-top:12px; font-style:italic;">
+              รอข้อมูลรายนามจากคณะฯ
+            </p>
+          </div>
+        </div>
+
+        <!-- อุดรธานี -->
+        <div class="location-card fade-in">
+          <div class="location-card-header">
+            <h4>🏫 ร.ร.มารีย์พิทักษ์</h4>
+            <div class="loc-sub">สังฆมณฑลอุดรธานี · จ.อุดรธานี</div>
+          </div>
+          <div class="location-card-body">
+            <div class="location-member">
+              <div class="member-avatar">จ</div>
+              <div class="member-info">
+                <div class="m-name">จิระภรณ์ ทิพย์ทอง</div>
+                <div class="m-role">ผู้รับใบอนุญาต</div>
+              </div>
+            </div>
+            <div class="location-member">
+              <div class="member-avatar">ร</div>
+              <div class="member-info">
+                <div class="m-name">รัตนา วรรณวิจิตร</div>
+                <div class="m-role">ผู้จัดการ</div>
+              </div>
+            </div>
+            <p style="color:var(--text-light); font-size:0.82rem; margin-top:12px; font-style:italic;">
+              รอข้อมูลภคิณีประจำบ้านเพิ่มเติม
+            </p>
+          </div>
+        </div>
+
+        <!-- สว่างแดนดิน -->
+        <div class="location-card fade-in">
+          <div class="location-card-header">
+            <h4>🏫 ร.ร.มารีย์พิทักษ์สว่างแดนดิน</h4>
+            <div class="loc-sub">อัครสังฆมณฑลท่าแร่-หนองแสง · จ.สกลนคร</div>
+          </div>
+          <div class="location-card-body">
+            <div class="location-member">
+              <div class="member-avatar">ส</div>
+              <div class="member-info">
+                <div class="m-name">สุนิตย์ ราชจำปี</div>
+                <div class="m-role">ผู้รับใบอนุญาต</div>
+              </div>
+            </div>
+            <div class="location-member">
+              <div class="member-avatar">น</div>
+              <div class="member-info">
+                <div class="m-name">นันทิยา เดชาเลิศ</div>
+                <div class="m-role">ผู้อำนวยการ</div>
+              </div>
+            </div>
+            <p style="color:var(--text-light); font-size:0.82rem; margin-top:12px; font-style:italic;">
+              รอข้อมูลภคิณีประจำบ้านเพิ่มเติม
+            </p>
+          </div>
+        </div>
+
+        <!-- พังโคน -->
+        <div class="location-card fade-in">
+          <div class="location-card-header">
+            <h4>🏫 ร.ร.มารีย์พิทักษ์พังโคน</h4>
+            <div class="loc-sub">อัครสังฆมณฑลท่าแร่-หนองแสง · จ.สกลนคร</div>
+          </div>
+          <div class="location-card-body">
+            <div class="location-member">
+              <div class="member-avatar">ท</div>
+              <div class="member-info">
+                <div class="m-name">เทียมจันทร์ นิลเขต</div>
+                <div class="m-role">ผู้อำนวยการ</div>
+              </div>
+            </div>
+            <div class="location-member">
+              <div class="member-avatar">ส</div>
+              <div class="member-info">
+                <div class="m-name">เสงี่ยมศรี คอมแพงจันทร์</div>
+                <div class="m-role">ผู้จัดการ</div>
+              </div>
+            </div>
+            <p style="color:var(--text-light); font-size:0.82rem; margin-top:12px; font-style:italic;">
+              รอข้อมูลภคิณีประจำบ้านเพิ่มเติม
+            </p>
+          </div>
+        </div>
+
+        <!-- เซกา -->
+        <div class="location-card fade-in">
+          <div class="location-card-header">
+            <h4>🏫 ร.ร.มารีย์พิทักษ์เซกา</h4>
+            <div class="loc-sub">อัครสังฆมณฑลท่าแร่-หนองแสง · จ.บึงกาฬ</div>
+          </div>
+          <div class="location-card-body">
+            <div class="location-member">
+              <div class="member-avatar">ว</div>
+              <div class="member-info">
+                <div class="m-name">วัชราภรณ์ งอยหล้า</div>
+                <div class="m-role">ผู้อำนวยการ</div>
+              </div>
+            </div>
+            <div class="location-member">
+              <div class="member-avatar">ก</div>
+              <div class="member-info">
+                <div class="m-name">กิติยา โพธิสาเกตุ</div>
+                <div class="m-role">ผู้จัดการ</div>
+              </div>
+            </div>
+            <p style="color:var(--text-light); font-size:0.82rem; margin-top:12px; font-style:italic;">
+              รอข้อมูลภคิณีประจำบ้านเพิ่มเติม
+            </p>
+          </div>
+        </div>
+
+        <!-- นิรมลวิทยา -->
+        <div class="location-card fade-in">
+          <div class="location-card-header diocese">
+            <h4>🏫 ร.ร.นิรมลวิทยา</h4>
+            <div class="loc-sub">การกุศล · อ.เมือง จ.สกลนคร</div>
+          </div>
+          <div class="location-card-body">
+            <div class="location-member">
+              <div class="member-avatar">ส</div>
+              <div class="member-info">
+                <div class="m-name">สังวาล เด่นไชยรัตน์</div>
+                <div class="m-role">ผู้จัดการ</div>
+              </div>
+            </div>
+            <div class="location-member">
+              <div class="member-avatar">ท</div>
+              <div class="member-info">
+                <div class="m-name">เทียมจันทร์ นิลเขต</div>
+                <div class="m-role">ผู้อำนวยการ</div>
+              </div>
+            </div>
+            <p style="color:var(--text-light); font-size:0.82rem; margin-top:12px; font-style:italic;">
+              รอข้อมูลภคิณีประจำบ้านเพิ่มเติม
+            </p>
+          </div>
+        </div>
+
+        <!-- กรุงเทพ -->
+        <div class="location-card fade-in">
+          <div class="location-card-header" style="background:var(--navy-light)">
+            <h4>✝ บ้านกรุงเทพฯ</h4>
+            <div class="loc-sub">อัครสังฆมณฑลกรุงเทพฯ</div>
+          </div>
+          <div class="location-card-body">
+            <p style="color:var(--text-light); font-size:0.88rem; font-style:italic; padding:12px 0;">
+              รอข้อมูลจากคณะฯ
+            </p>
+          </div>
+        </div>
+
+        <!-- เชียงใหม่ -->
+        <div class="location-card fade-in">
+          <div class="location-card-header" style="background:var(--navy-light)">
+            <h4>✝ บ้านเชียงใหม่</h4>
+            <div class="loc-sub">สังฆมณฑลเชียงใหม่</div>
+          </div>
+          <div class="location-card-body">
+            <p style="color:var(--text-light); font-size:0.88rem; font-style:italic; padding:12px 0;">
+              รอข้อมูลจากคณะฯ
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- NOTABLE MEMBERS -->
+  <section class="section section-alt">
+    <div class="container">
+      <h2 class="section-title">ภคิณีที่มีบทบาทสำคัญ</h2>
+      <div class="section-divider"></div>
+      <p class="section-subtitle">รายนามภคิณีผู้มีบทบาทในการบริหารและพัฒนาคณะฯ (จากเอกสารทางการ)</p>
+
+      <div class="dir-section fade-in" style="margin-top:32px">
+        <table class="dir-table">
+          <thead>
+            <tr>
+              <th style="width:25%">ชื่อ-สกุล</th>
+              <th style="width:40%">บทบาท / ตำแหน่ง</th>
+              <th style="width:35%">หมายเหตุ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="name-cell">เฉลิมรัตน์ ธีระนุกูล</td>
+              <td>ผู้รับใบอนุญาตคนแรกของหลายโรงเรียน</td>
+              <td>MP อุดร, MPS สว่างแดนดิน, MPK พังโคน</td>
+            </tr>
+            <tr>
+              <td class="name-cell">จิระภรณ์ ทิพย์ทอง</td>
+              <td>ผู้รับใบอนุญาต, ผู้จัดการ, ผู้อำนวยการ</td>
+              <td>MP อุดร, NRW นิรมล, MPSK เซกา · ผู้ประสานงานปัจจุบัน</td>
+            </tr>
+            <tr>
+              <td class="name-cell">สุนิตย์ ราชจำปี</td>
+              <td>ผู้รับใบอนุญาต</td>
+              <td>MPS สว่างแดนดิน, MPK พังโคน (ตั้งแต่ พ.ศ. 2558)</td>
+            </tr>
+            <tr>
+              <td class="name-cell">รัตนา วรรณวิจิตร</td>
+              <td>ผู้จัดการ</td>
+              <td>MP อุดร, NRW นิรมล</td>
+            </tr>
+            <tr>
+              <td class="name-cell">เทียมจันทร์ นิลเขต</td>
+              <td>ผู้อำนวยการ</td>
+              <td>MPK พังโคน, NRW นิรมล</td>
+            </tr>
+            <tr>
+              <td class="name-cell">นันทิยา เดชาเลิศ</td>
+              <td>ผู้อำนวยการ</td>
+              <td>MPS สว่างแดนดิน</td>
+            </tr>
+            <tr>
+              <td class="name-cell">วัชราภรณ์ งอยหล้า</td>
+              <td>ผู้อำนวยการ, ผู้จัดการ</td>
+              <td>MPSK เซกา, NRW นิรมล</td>
+            </tr>
+            <tr>
+              <td class="name-cell">พิรุณพร เดชาเลิศ</td>
+              <td>ผู้จัดการ</td>
+              <td>MPS สว่างแดนดิน</td>
+            </tr>
+            <tr>
+              <td class="name-cell">กิติยา โพธิสาเกตุ</td>
+              <td>ผู้จัดการ</td>
+              <td>MPSK เซกา</td>
+            </tr>
+            <tr>
+              <td class="name-cell">เสงี่ยมศรี คอมแพงจันทร์</td>
+              <td>ผู้จัดการ</td>
+              <td>MPK พังโคน</td>
+            </tr>
+            <tr>
+              <td class="name-cell">สังวาล เด่นไชยรัตน์</td>
+              <td>ผู้จัดการ</td>
+              <td>NRW นิรมล</td>
+            </tr>
+            <tr>
+              <td class="name-cell">ปริยากร บุษบา</td>
+              <td>ผู้จัดการ, ครูใหญ่</td>
+              <td>MPS สว่างแดนดิน (รุ่นแรก)</td>
+            </tr>
+            <tr>
+              <td class="name-cell">ประภาพร นาแว่น</td>
+              <td>ผู้อำนวยการ</td>
+              <td>MPSK เซกา</td>
+            </tr>
+            <tr>
+              <td class="name-cell">ขวัญฤดี วันดี</td>
+              <td>ผู้จัดการ</td>
+              <td>MPSK เซกา</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>✝ คณะภคิณีรักกางเขนแห่งท่าแร่</h4>
+          <p>สืบสานจิตตารมณ์แห่งความรักต่อไม้กางเขนของพระเยซูเจ้า มาตั้งแต่ ค.ศ. 1672</p>
+        </div>
+        <div>
+          <h4>เมนูหลัก</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">หน้าแรก</a></li>
+            <li><a href="history.html">ประวัติศาสตร์</a></li>
+            <li><a href="schools.html">โรงเรียนในเครือ</a></li>
+            <li><a href="directory.html">ไดเรกทอรี่</a></li>
+            <li><a href="vocation.html">กระแสเรียก</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>เพิ่มเติม</h4>
+          <ul class="footer-links">
+            <li><a href="about.html">เกี่ยวกับเรา</a></li>
+            <li><a href="contact.html">ติดต่อเรา</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>ติดต่อ</h4>
+          <p>ต.ท่าแร่ อ.เมือง จ.สกลนคร 47230</p>
+          <p style="margin-top:8px">📞 062-545-4196<br>✉️ lct1924@gmail.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="motto">"IN HOC SIGNO VINCES" — อาศัยเครื่องหมายนี้ ท่านจะชนะ</p>
+        <p>&copy; 2569 คณะภคิณีรักกางเขนแห่งท่าแร่ | Lovers of the Cross of Tharae</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
